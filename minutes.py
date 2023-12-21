@@ -119,7 +119,7 @@ where meeting_id = {meeting_number};"
 
     role_takers = conn.query(role_taker_sql)
 
-    st.markdown('''## :pushpin: :gray[The Pillars of the Meeting]''')    
+    st.markdown('''### :pushpin: :gray[The Pillars of the Meeting]''')    
 
     coldict = {'President':'#772432', 'ToD':'#6b202d', 'SAA':'#5f1c28', 'TTM':'#531923', 
                'GE':'#004165', 'Timer':'#003a5a', 'AhCounter':'#003450', 'Grammarian':'#002d46'}
@@ -172,7 +172,7 @@ where meeting_id = {meeting_number};"
 
     speeches = conn.query(speeches_sql)
 
-    st.markdown('''## :speaker: :gray[The Prepared Speeches...]''')
+    st.markdown('''### :speaker: :gray[The Prepared Speeches...]''')
 
 
     coldict = {'Speaker':'#772432', 'Evaluator':'#004165', 'Title':'#2f0e14', 'Project':'#47151e'}
@@ -196,7 +196,7 @@ and meeting_id = {meeting_number};"
 
     coldict = {'Speaker':'#004165', 'Topic':'#772432'}
 
-    st.markdown('''## :placard: :gray[The Table Topics...]''')
+    st.markdown('''### :placard: :gray[The Table Topics...]''')
 
 
     # split the dataframe table_topis into 2 dataframes
@@ -305,7 +305,7 @@ def print_attendees(meeting_number):
     attendees_list = pd.DataFrame(attendees_list)
 
 
-    st.markdown('''## :raised_hands: :gray[Who were present...]''')
+    st.markdown('''### :raised_hands: :gray[Who were present...]''')
 
 
     # if the member name starts with S or M or A, then highlight it
@@ -528,7 +528,7 @@ where meeting_id = {meeting_number};"
     awardees = conn.query(awardees_sql)
 
 
-    st.markdown('''## :trophy: :gray[**And** the award goes to...]''')
+    st.markdown('''### :trophy: :gray[**And** the award goes to...]''')
 
 
     coldict = {'aux_role_taker':'#004165', 'evaluator':'#003a5a', 'role_taker':'#003450', 'speaker':'#002d46', 'tt_speaker':'#00273c'}
