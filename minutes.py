@@ -39,24 +39,21 @@ def print_meeting_details(meeting_date):
     meeting_id = meeting_details.loc[0].iloc[0]
     theme = meeting_details.loc[0].iloc[1]
 
-    col1, col2, col3 = st.columns(3)
+    col1, col2, col3, col4 = st.columns(4)
 
     with col1:
-        st.subheader(f':hash:')
-        print_formatted_sub_header(meeting_id)
-        draw_meeting_progress_bar(meeting_date)
-        
-
-
+        st.markdown(f'''### :hash: :gray[{meeting_id}]''')
+            
     with col2:
-        st.subheader(f':calendar:')
-
         simplified_date = meeting_date.strftime('%d %B, %Y')
-        print_formatted_sub_header(simplified_date)
+        st.markdown(f'''### :calendar: :gray[{simplified_date}]''')
     
     with col3:
-        st.subheader(':clipboard:')
-        print_formatted_sub_header(theme)
+   
+        st.markdown(f'''### :clipboard: :gray[{theme}]''')
+   
+    with col4:
+        draw_meeting_progress_bar(meeting_date)
 
     return meeting_id
 
@@ -457,8 +454,7 @@ order by meeting_id asc;"
 
     with col1:
 
-        print_formatted_sub_header('Attendance')
-        st.metric(label="Members Present", value=total_members_present, delta=diff.item(), label_visibility="collapsed")
+        st.metric(label="Members Present", value=total_members_present, delta=diff.item(), label_visibility="visible")
 
 
         last_4_meetings = last_4_meetings.transpose()
@@ -472,13 +468,13 @@ order by meeting_id asc;"
 
 
     with col2:
-        print_formatted_sub_header('Speeches')
-        st.metric(label="Speeches", value=total_speakers, delta=diff_speakers.item(), label_visibility="collapsed")    
+
+        st.metric(label="Speeches", value=total_speakers, delta=diff_speakers.item(), label_visibility="visible")    
 
 
     with col3:
-        print_formatted_sub_header('Table Topics')
-        st.metric(label="Table Topics", value=total_table_topics, delta=diff_table_topics.item(), label_visibility="collapsed")
+
+        st.metric(label="Table Topics", value=total_table_topics, delta=diff_table_topics.item(), label_visibility="visible")
 
 
         last_4_table_topics = last_4_table_topics.transpose()
@@ -492,8 +488,8 @@ order by meeting_id asc;"
     
 
     with col4:
-        print_formatted_sub_header('Guests')
-        st.metric(label="Meeting Progress", value=guests, delta=diff_guests.item(), label_visibility="collapsed")
+
+        st.metric(label="Guests", value=guests, delta=diff_guests.item(), label_visibility="visible")
 
         last_4_guests = last_4_guests.transpose()
         list = last_4_guests.values.tolist()
