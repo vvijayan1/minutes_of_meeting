@@ -553,7 +553,7 @@ def print_footer():
 
     html_temp = """
 <div style="background-color:#772432;padding:0.1px">
-<h4 style="color:#A9B2B1;text-align:center;">Better Speaking, Better Thinking, Better Listening</h4>
+<h5 style="color:#A9B2B1;text-align:center;">Better Speaking, Better Thinking, Better Listening</h5>
 </div>
 """
     st.markdown(html_temp,unsafe_allow_html=True)
