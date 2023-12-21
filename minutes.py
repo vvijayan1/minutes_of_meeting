@@ -346,7 +346,12 @@ from attendance \
 where meeting_id = {prev_meeting_number};"
 
     previous_meeting_present = conn.query(previous_meeting_sql)
-    previous_meeting_present = previous_meeting_present.loc[0].iloc[0]
+
+
+    if not previous_meeting_present.empty:
+        previous_meeting_present = previous_meeting_present.loc[0].iloc[0]
+    else:
+        previous_meeting_present = 0
 
     diff = (total_members_present - previous_meeting_present)   
 
@@ -365,14 +370,24 @@ from speeches \
 where meeting_id = {meeting_number};"
 
     total_speakers = conn.query(total_speakers_sql)
-    total_speakers = total_speakers.loc[0].iloc[0]
+
+    if not total_speakers.empty:
+        total_speakers = total_speakers.loc[0].iloc[0]
+    else:
+        total_speakers = 0
 
     total_speakers_prev_sql = f"select count(*) \
 from speeches \
 where meeting_id = {prev_meeting_number};"
 
     total_speakers_prev = conn.query(total_speakers_prev_sql)
-    total_speakers_prev = total_speakers_prev.loc[0].iloc[0]
+
+    if not total_speakers_prev.empty:
+        total_speakers_prev = total_speakers_prev.loc[0].iloc[0]
+    else:
+        total_speakers_prev = 0 
+
+
 
     diff_speakers = (total_speakers - total_speakers_prev)
 
@@ -389,7 +404,11 @@ from table_topics \
 where meeting_id = {prev_meeting_number};"
 
     total_table_topics_prev = conn.query(total_table_topics_prev_sql)
-    total_table_topics_prev = total_table_topics_prev.loc[0].iloc[0]
+
+    if not total_table_topics_prev.empty:
+        total_table_topics_prev = total_table_topics_prev.loc[0].iloc[0]
+    else:
+        total_table_topics_prev = 0
 
     diff_table_topics = (total_table_topics - total_table_topics_prev)
 
@@ -415,7 +434,12 @@ order by meeting_id asc;"
     where meeting_id = {prev_meeting_number};"
 
     guests_prev = conn.query(guests_prev_sql)
-    guests_prev = guests_prev.loc[0].iloc[0]
+
+    # extract only if the dataframe is not empty
+    if not guests_prev.empty:
+        guests_prev = guests_prev.loc[0].iloc[0]
+    else:
+        guests_prev = 0
 
     diff_guests = (guests - guests_prev)
 
@@ -563,7 +587,6 @@ if meeting_id == 0:
 st.markdown("""---""")
 print_meeting_metrics(meeting_id)
 st.markdown("""---""")
-#draw_meeting_progress_bar(meeting_date)
 print_role_takers(meeting_id)
 st.markdown("""---""")
 print_speeches(meeting_id)
