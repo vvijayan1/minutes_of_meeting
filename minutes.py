@@ -72,8 +72,6 @@ def draw_meeting_progress_bar(meeting_date):
         end_date = f'{meeting_date.year}-12-31'
     
     # find weeks elapsed between start and end 
-    # weeks_elapsed = (pd.to_datetime(meeting_date).days - pd.to_datetime(start_date)).days / 7
-    # weeks_left = 26 - weeks_elapsed
 
     delta = pd.to_datetime(end_date) - pd.to_datetime(meeting_date)
     weeks_left = delta.days / 7
@@ -225,9 +223,6 @@ def highlight_regulars(member_name, meeting_number):
         return 'background-color: black'
     
 
-    # if member_name starts with S or M or A, then highlight it
-    # this is just a placeholder logic, we need to extract the regulars
-
     # check if the member is regular in the last 4 meetings
     # if yes, then highlight it
     # if no, then don't highlight it
@@ -274,19 +269,6 @@ and meeting_id in ({last_4_meetings});"
 
 
 
-#    if member_name is None:
-#        return 'background-color: black'
-
-#    if member_name[0] == 'S' or member_name[0] == 'M' :
-#        return 'background-color: #3B0104'
-#    else:
-#        return 'background-color: black'
-    
-
-
-
-
-
 
 def print_attendees(meeting_number):
 
@@ -312,13 +294,7 @@ def print_attendees(meeting_number):
     attendees_list = attendees_list.style.map(highlight_regulars, meeting_number=meeting_number)
     st.dataframe(attendees_list, hide_index=True)
     
-
-    #st.markdown(f'<p style="background-color:green;color:white;;">Names in green have 100% attendence this term</p>', unsafe_allow_html=True)
     st.caption(':brown[Names in brown background have been regular in the last 4 meetings]')
-
-
-
-
 
 
 
@@ -542,8 +518,6 @@ where meeting_id = {meeting_number};"
                     "speaker": "Best Speaker",
                     "tt_speaker": "Best Table Topics Speaker"
                 })
-
-
 
 
 
