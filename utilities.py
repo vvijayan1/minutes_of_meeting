@@ -51,3 +51,33 @@ def get_last_meeting_ids():
     # return the list
     return meeting_ids  
 
+
+
+def get_meeting_ids_bw_dates(from_date, to_date):
+    # create a connection to the minutes database
+    conn = st.connection('minutes', type='sql')
+
+    # create a sql statement to query the meetings table
+    meetings_sql = f"""
+        SELECT
+            meeting_id
+        FROM
+            meetings
+        WHERE
+            date >= '{from_date}'
+        AND
+            date <= '{to_date}'
+        ORDER BY
+            meeting_id
+    """
+
+    print(meetings_sql)
+    meetings = conn.query(meetings_sql)
+
+
+    # create a list of the meeting IDs
+    meeting_ids = meetings['meeting_id'].tolist()
+
+    # return the list
+    return meeting_ids
+
