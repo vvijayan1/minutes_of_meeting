@@ -14,7 +14,6 @@ def print_formatted_sub_header(sub_header):
 
 
 
-
 def highlight_speech_cols(s, coldict):
 
     if s.name in coldict.keys():
