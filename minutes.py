@@ -233,6 +233,7 @@ where meeting_id >= {meeting_number} - 3 \
 and meeting_id <= {meeting_number} \
 order by meeting_id asc;"
     
+
     conn = st.connection('minutes', type='sql')
 
     last_4_meetings = conn.query(last_4_meetings_sql)
@@ -257,6 +258,7 @@ from attendance \
 where member_id = {member_id} \
 and meeting_id in ({last_4_meetings});"
     
+
     meetings_attended = conn.query(meetings_attended_sql)
     meetings_attended = meetings_attended.loc[0].iloc[0]
 
