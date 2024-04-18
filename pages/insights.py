@@ -15,10 +15,10 @@ def accept_user_input():
         min_date_value = date.fromisoformat('2024-01-01')
         max_date_value = date.today()
 
-        start_date = st.date_input('Start Date', min_value=min_date_value, max_value=max_date_value)
+        start_date = st.date_input('From what date do you want to analyze?', min_value=min_date_value, max_value=max_date_value)
 
         # add a date input for the end date
-        end_date = st.date_input('End Date',min_value=min_date_value, max_value=max_date_value)
+        end_date = st.date_input('Till what date do you want to analyze?',min_value=min_date_value, max_value=max_date_value)
 
         # add a submit button
         submit_button = st.form_submit_button(label='Submit')
@@ -46,7 +46,7 @@ def get_meeting_list(start_date, end_date):
 def highlight_none(val):
     if val is None or pd.isnull(val):
         return 'background-color: orange'
-    elif val is 'P':
+    elif val == 'P':
         return 'background-color: green'
     
 
@@ -54,7 +54,7 @@ def highlight_spoke(val):
 
     if val is None or pd.isnull(val):
         return 'background-color: grey'
-    elif val is 'S':
+    elif val == 'S':
         return 'background-color: blue'
 
 
@@ -62,7 +62,7 @@ def highlight_speakers(val):
 
     if val is None or pd.isnull(val):
         return 'background-color: #7393B3'
-    elif val is 'S':
+    elif val == 'S':
         return 'background-color: purple'
 
 
@@ -70,7 +70,7 @@ def highlight_evaluators(val):
 
     if val is None or pd.isnull(val):
         return 'background-color: #7393B3'
-    elif val is 'S':
+    elif val == 'S':
         return 'background-color: #5D3FD3'
 
 
@@ -120,7 +120,7 @@ def display_evaluators(meeting_ids_csv):
     meeting_dates_dict = meeting_dates.set_index('meeting_id')['date'].to_dict()
 
     attendance_matrix_df_sorted = attendance_matrix_df_sorted.rename(columns=meeting_dates_dict)
-    styled_attendance_matrix = attendance_matrix_df_sorted.style.applymap(highlight_evaluators)
+    styled_attendance_matrix = attendance_matrix_df_sorted.style.map(highlight_evaluators)
 
     st.dataframe(styled_attendance_matrix)
 
@@ -176,7 +176,7 @@ def display_prepared_speakers(meeting_ids_csv):
     meeting_dates_dict = meeting_dates.set_index('meeting_id')['date'].to_dict()
 
     attendance_matrix_df_sorted = attendance_matrix_df_sorted.rename(columns=meeting_dates_dict)
-    styled_attendance_matrix = attendance_matrix_df_sorted.style.applymap(highlight_speakers)
+    styled_attendance_matrix = attendance_matrix_df_sorted.style.map(highlight_speakers)
 
     st.dataframe(styled_attendance_matrix)
 
@@ -229,7 +229,7 @@ def display_table_topics_speakers(meeting_ids_csv):
     meeting_dates_dict = meeting_dates.set_index('meeting_id')['date'].to_dict()
 
     attendance_matrix_df_sorted = attendance_matrix_df_sorted.rename(columns=meeting_dates_dict)
-    styled_attendance_matrix = attendance_matrix_df_sorted.style.applymap(highlight_spoke)
+    styled_attendance_matrix = attendance_matrix_df_sorted.style.map(highlight_spoke)
 
     st.dataframe(styled_attendance_matrix)
 
@@ -279,7 +279,7 @@ def display_meeting_attendance(meeting_ids_csv):
     meeting_dates_dict = meeting_dates.set_index('meeting_id')['date'].to_dict()
 
     attendance_matrix_df_sorted = attendance_matrix_df_sorted.rename(columns=meeting_dates_dict)
-    styled_attendance_matrix = attendance_matrix_df_sorted.style.applymap(highlight_none)
+    styled_attendance_matrix = attendance_matrix_df_sorted.style.map(highlight_none)
 
     st.dataframe(styled_attendance_matrix)
 
@@ -288,8 +288,14 @@ def display_meeting_attendance(meeting_ids_csv):
     
 def main(): 
     
+
+    html_temp = """
+<div style="background-color:#772432;padding:1px">
+<h3 style="color:#A9B2B1;text-align:center;">Insights: know what happened over a time period</h3>
+</div>
+"""
+    st.markdown(html_temp,unsafe_allow_html=True)
     
-    st.header('Extract insights for meetings between two dates')
     start_date, end_date = accept_user_input()
     
     st.write('From Date:', start_date)

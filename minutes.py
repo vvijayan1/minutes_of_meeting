@@ -550,8 +550,6 @@ if 'MEETINGS_IN_PROD' in os.environ and os.environ['MEETINGS_IN_PROD'] == '1':
 
 
 #st.set_page_config(layout="wide")
-# take as input date of meeting on streamlit 
-meeting_date = st.date_input('Date of Meeting')
 
 
 # prepare html code that is used as title of the page that is centered and all
@@ -562,6 +560,9 @@ html_temp = """
 </div>
 """
 st.markdown(html_temp,unsafe_allow_html=True)
+
+# take as input date of meeting on streamlit 
+meeting_date = st.date_input('Choose Meeting Date')
 
 meeting_id = print_meeting_details(meeting_date)
 
