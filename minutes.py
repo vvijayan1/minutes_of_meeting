@@ -539,7 +539,7 @@ def print_footer():
 
 
 
-if 'MEETINGS_IN_DEV' not in os.environ and os.environ['MEETINGS_IN_DEV'] != '1':
+if 'MEETINGS_IN_DEV' not in os.environ:
     
     show_pages(
         [
