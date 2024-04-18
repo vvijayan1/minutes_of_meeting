@@ -2,6 +2,9 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 from datetime import datetime
+import os
+
+from st_pages import Page, show_pages, add_page_title
 
 def print_formatted_sub_header(sub_header):
     html_temp = f"""
@@ -535,7 +538,18 @@ def print_footer():
 
 
 
-st.set_page_config(layout="wide")
+
+if 'MEETINGS_IN_PROD' in os.environ and os.environ['MEETINGS_IN_PROD'] == '1':
+    
+    show_pages(
+        [
+            Page("minutes.py", "Home", "🏠"),
+            Page("pages/insights.py", "Insights", ":bulb:"),
+        ]
+    )
+
+
+#st.set_page_config(layout="wide")
 # take as input date of meeting on streamlit 
 meeting_date = st.date_input('Date of Meeting')
 
