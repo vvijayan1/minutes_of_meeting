@@ -566,7 +566,9 @@ meeting_date = st.date_input('Choose Meeting Date')
 
 meeting_id = print_meeting_details(meeting_date)
 
+
 if meeting_id == 0:
+    st.page_link("pages/insights.py", label="Want to look at Insights instead?", icon="🧐")
     st.stop()
 
 
@@ -583,5 +585,6 @@ print_attendees(meeting_id)
 st.markdown("""---""")
 print_awardees(meeting_id)
 st.markdown("""---""")
+st.page_link("pages/insights.py", label="Want to look at Insights as well?", icon="🧐")
 print_footer()
 
