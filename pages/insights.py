@@ -281,7 +281,9 @@ def display_meeting_attendance(meeting_ids_csv):
     attendance_matrix_df_sorted = attendance_matrix_df_sorted.rename(columns=meeting_dates_dict)
     styled_attendance_matrix = attendance_matrix_df_sorted.style.map(highlight_none)
 
-    st.dataframe(styled_attendance_matrix)
+    styled_attendance_matrix.index.name = "Member"
+    st.dataframe(styled_attendance_matrix, 
+                 column_config={'Member': st.column_config.TextColumn("Member", width="large")})
 
 
 
