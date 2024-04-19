@@ -127,7 +127,6 @@ def display_evaluators(meeting_ids_csv):
     st.dataframe(styled_attendance_matrix, 
                  column_config={'Member': st.column_config.TextColumn("Member", width="medium")})
     
-    st.dataframe(styled_attendance_matrix)
 
 
 
@@ -187,10 +186,6 @@ def display_prepared_speakers(meeting_ids_csv):
     styled_attendance_matrix.index.name = "Member"
     st.dataframe(styled_attendance_matrix, 
                  column_config={'Member': st.column_config.TextColumn("Member", width="medium")})
-    st.dataframe(styled_attendance_matrix)
-
-
-
 
 
 def display_table_topics_speakers(meeting_ids_csv):
@@ -244,7 +239,6 @@ def display_table_topics_speakers(meeting_ids_csv):
     styled_attendance_matrix.index.name = "Member"
     st.dataframe(styled_attendance_matrix, 
                  column_config={'Member': st.column_config.TextColumn("Member", width="medium")})
-    st.dataframe(styled_attendance_matrix)
 
 
 def display_meeting_attendance(meeting_ids_csv):
