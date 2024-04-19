@@ -283,7 +283,7 @@ def display_meeting_attendance(meeting_ids_csv):
 
     styled_attendance_matrix.index.name = "Member"
     st.dataframe(styled_attendance_matrix, 
-                 column_config={'Member': st.column_config.TextColumn("Member", width="large")})
+                 column_config={'Member': st.column_config.TextColumn("Member", width="medium")})
 
 
 
