@@ -539,14 +539,6 @@ def print_footer():
 
 
 
-if 'MEETINGS_IN_DEV' not in os.environ:
-    
-    show_pages(
-        [
-            Page("minutes.py", "Home", "🏠"),
-            Page("pages/insights.py", "Insights", ":bulb:"),
-        ]
-    )
 
 
 #st.set_page_config(layout="wide")

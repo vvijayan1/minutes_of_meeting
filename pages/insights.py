@@ -294,6 +294,35 @@ def display_meeting_attendance(meeting_ids_csv):
 
 
 
+def display_awards(meeting_ids_csv):
+
+    sql_query = f'''SELECT
+    m.first_name  AS member_name,
+    COUNT(CASE WHEN a.best_speaker_id = m.member_id THEN 1 ELSE NULL END) AS best_speaker_awards,
+    COUNT(CASE WHEN a.best_table_topics_speaker_id = m.member_id THEN 1 ELSE NULL END) AS best_table_topics_awards,
+    COUNT(CASE WHEN a.best_evaluator_id = m.member_id THEN 1 ELSE NULL END) AS best_evaluator_awards,
+	COUNT(CASE WHEN a.best_auxiliary_role_taker_id = m.member_id THEN 1 ELSE NULL END) AS best_auxiliary_role_awards,
+	COUNT(CASE WHEN a.best_role_taker_id= m.member_id THEN 1 ELSE NULL END) AS best_role_taker_awards
+FROM
+    members m
+LEFT JOIN
+    awards a ON m.member_id IN (a.best_speaker_id, a.best_table_topics_speaker_id, a.best_evaluator_id,a.best_auxiliary_role_taker_id ,a.best_role_taker_id)
+where a.meeting_id  in ({meeting_ids_csv})
+GROUP BY
+ m.first_name
+ORDER BY
+    member_name;
+'''
+
+    conn = st.connection('minutes', type='sql')
+    awards_df = conn.query(sql_query)
+
+    # add a column for total awards
+    awards_df['Total Awards'] = awards_df.iloc[:, 1:].sum(axis=1)
+
+
+    st.write(awards_df)
+
     
 def main(): 
     
@@ -334,6 +363,10 @@ def main():
     st.subheader("Evaluations over time")
     st.write("In descreasing order of evaluations; :violet[in violet means evaluated a speech]")
     display_evaluators(meeting_ids_csv)
+
+    st.subheader("Medal Tally")
+    display_awards(meeting_ids_csv)
+
 
     st.divider()
     st.write(":arrow_forward: The author welcomes suggestions/ideas.")
