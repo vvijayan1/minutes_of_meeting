@@ -113,6 +113,10 @@ def display_evaluators(meeting_ids_csv):
     attendance_matrix_df['Count_S'] = attendance_matrix_df[unique_meeting_ids].apply(lambda row: row.eq('S').sum(), axis=1)
     attendance_matrix_df_sorted = attendance_matrix_df.sort_values(by='Count_S', ascending=False).drop('Count_S', axis=1)
 
+    # add a column for total evaluations based on the number of S
+    attendance_matrix_df_sorted['Total Evaluations'] = attendance_matrix_df_sorted[unique_meeting_ids].apply(lambda row: row.eq('S').sum(), axis=1)
+
+
     # change column IDs to meeting dates 
     meeting_sql = f"select meeting_id, date from meetings where meeting_id in ({meeting_ids_csv})"
     meeting_dates = conn.query(meeting_sql)
@@ -173,6 +177,10 @@ def display_prepared_speakers(meeting_ids_csv):
     attendance_matrix_df['Count_S'] = attendance_matrix_df[unique_meeting_ids].apply(lambda row: row.eq('S').sum(), axis=1)
     attendance_matrix_df_sorted = attendance_matrix_df.sort_values(by='Count_S', ascending=False).drop('Count_S', axis=1)
 
+    # add a column for total speeches based on the number of S
+    attendance_matrix_df_sorted['Total Speeches'] = attendance_matrix_df_sorted[unique_meeting_ids].apply(lambda row: row.eq('S').sum(), axis=1)
+
+
     # change column IDs to meeting dates 
     meeting_sql = f"select meeting_id, date from meetings where meeting_id in ({meeting_ids_csv})"
     meeting_dates = conn.query(meeting_sql)
@@ -225,6 +233,10 @@ def display_table_topics_speakers(meeting_ids_csv):
 
     attendance_matrix_df['Count_S'] = attendance_matrix_df[unique_meeting_ids].apply(lambda row: row.eq('S').sum(), axis=1)
     attendance_matrix_df_sorted = attendance_matrix_df.sort_values(by='Count_S', ascending=False).drop('Count_S', axis=1)
+
+    # add a column for total table topics attempts based on the number of S
+    attendance_matrix_df_sorted['Total Table Topics Attempts'] = attendance_matrix_df_sorted[unique_meeting_ids].apply(lambda row: row.eq('S').sum(), axis=1)
+
 
     # change column IDs to meeting dates 
     meeting_sql = f"select meeting_id, date from meetings where meeting_id in ({meeting_ids_csv})"
@@ -283,10 +295,14 @@ def display_meeting_attendance(meeting_ids_csv):
     meeting_sql = f"select meeting_id, date from meetings where meeting_id in ({meeting_ids_csv})"
     meeting_dates = conn.query(meeting_sql)
 
+    attendance_matrix_df_sorted['Total Attendance'] = attendance_matrix_df_sorted[unique_meeting_ids].apply(lambda row: row.eq('P').sum(), axis=1)
+
+
     meeting_dates_dict = meeting_dates.set_index('meeting_id')['date'].to_dict()
 
     attendance_matrix_df_sorted = attendance_matrix_df_sorted.rename(columns=meeting_dates_dict)
     styled_attendance_matrix = attendance_matrix_df_sorted.style.map(highlight_none)
+
 
     styled_attendance_matrix.index.name = "Member"
     st.dataframe(styled_attendance_matrix, 
@@ -298,11 +314,11 @@ def display_awards(meeting_ids_csv):
 
     sql_query = f'''SELECT
     m.first_name  AS member_name,
-    COUNT(CASE WHEN a.best_speaker_id = m.member_id THEN 1 ELSE NULL END) AS best_speaker_awards,
-    COUNT(CASE WHEN a.best_table_topics_speaker_id = m.member_id THEN 1 ELSE NULL END) AS best_table_topics_awards,
-    COUNT(CASE WHEN a.best_evaluator_id = m.member_id THEN 1 ELSE NULL END) AS best_evaluator_awards,
-	COUNT(CASE WHEN a.best_auxiliary_role_taker_id = m.member_id THEN 1 ELSE NULL END) AS best_auxiliary_role_awards,
-	COUNT(CASE WHEN a.best_role_taker_id= m.member_id THEN 1 ELSE NULL END) AS best_role_taker_awards
+    COUNT(CASE WHEN a.best_speaker_id = m.member_id THEN 1 ELSE NULL END) AS best_speaker,
+    COUNT(CASE WHEN a.best_table_topics_speaker_id = m.member_id THEN 1 ELSE NULL END) AS best_table_topics,
+    COUNT(CASE WHEN a.best_evaluator_id = m.member_id THEN 1 ELSE NULL END) AS best_evaluator,
+	COUNT(CASE WHEN a.best_auxiliary_role_taker_id = m.member_id THEN 1 ELSE NULL END) AS best_auxiliary_role,
+	COUNT(CASE WHEN a.best_role_taker_id= m.member_id THEN 1 ELSE NULL END) AS best_role_taker
 FROM
     members m
 LEFT JOIN
@@ -320,10 +336,88 @@ ORDER BY
     # add a column for total awards
     awards_df['Total Awards'] = awards_df.iloc[:, 1:].sum(axis=1)
 
+    # sort the dataframe by total awards
+    awards_df = awards_df.sort_values(by='Total Awards', ascending=False)
 
-    st.write(awards_df)
+    # change the column names
+    awards_df.columns = ['Member Name', 'Speaker', 'Table Topics', 'Evaluator', 'Auxiliary Role', 'Role Taker', 'Total Awards']
 
-    
+
+    # make member name the index
+    awards_df.set_index('Member Name', inplace=True)
+
+    # highlight the total awards column
+    styled_awards = awards_df.style.applymap(lambda x: 'background-color: #5D3FD3' if x > 0 else 'background-color: #7393B3', subset=['Total Awards'])
+
+    st.dataframe(styled_awards)
+
+
+
+def display_summary_stats(meeting_ids_csv):
+
+    sql_query = f'''-- Define the set of meeting IDs you want to restrict the results to
+WITH restricted_meetings AS (
+    SELECT meeting_id
+    FROM meetings -- Assuming you have a meetings table or use a provided list of meeting IDs
+    WHERE meeting_id IN ({meeting_ids_csv}) -- Replace with your desired meeting IDs
+)
+
+SELECT
+    m.first_name AS Member_Name,
+    COALESCE(attendance_counts.total_attendance, 0) AS total_attendance,
+    COALESCE(speeches_counts.total_speeches, 0) AS total_speeches,
+    COALESCE(evaluations_counts.total_evaluations, 0) AS total_evaluations,
+    COALESCE(table_topics_counts.total_table_topics, 0) AS total_table_topics
+FROM
+    members m
+LEFT JOIN
+    (SELECT member_id, COUNT(*) AS total_attendance
+     FROM attendance
+     WHERE meeting_id IN (SELECT meeting_id FROM restricted_meetings)
+     GROUP BY member_id) AS attendance_counts ON m.member_id = attendance_counts.member_id
+LEFT JOIN
+    (SELECT speaker_id AS member_id, COUNT(*) AS total_speeches
+     FROM speeches
+     WHERE meeting_id IN (SELECT meeting_id FROM restricted_meetings)
+     GROUP BY speaker_id) AS speeches_counts ON m.member_id = speeches_counts.member_id
+LEFT JOIN
+    (SELECT evaluation_counterpart_id AS member_id, COUNT(*) AS total_evaluations
+     FROM speeches
+     WHERE meeting_id IN (SELECT meeting_id FROM restricted_meetings)
+     GROUP BY evaluation_counterpart_id) AS evaluations_counts ON m.member_id = evaluations_counts.member_id
+LEFT JOIN
+    (SELECT speaker_id AS member_id, COUNT(*) AS total_table_topics
+     FROM table_topics
+     WHERE meeting_id IN (SELECT meeting_id FROM restricted_meetings)
+     GROUP BY speaker_id) AS table_topics_counts ON m.member_id = table_topics_counts.member_id
+ORDER BY
+    member_name;
+'''
+
+    conn = st.connection('minutes', type='sql')
+    summary_stats_df = conn.query(sql_query)
+
+    # sort by total attendance
+    summary_stats_df = summary_stats_df.sort_values(by='total_attendance', ascending=False)
+
+    # make member name the index
+    summary_stats_df.set_index('Member_Name', inplace=True)
+
+    # change the column names
+    summary_stats_df.columns = ['Total Attendance', 'Total Speeches', 'Total Evaluations', 'Total Table Topics']
+
+    # make each column in different shades of blue
+    styled_summary_stats_df = summary_stats_df.style.applymap(lambda x: 'background-color: #7393B3', subset=['Total Attendance'])
+    styled_summary_stats_df = styled_summary_stats_df.applymap(lambda x: 'background-color: #5D3FD3', subset=['Total Speeches'])
+    styled_summary_stats_df = styled_summary_stats_df.applymap(lambda x: 'background-color: #5D3FD3', subset=['Total Evaluations'])
+    styled_summary_stats_df = styled_summary_stats_df.applymap(lambda x: 'background-color: #5D3FD3', subset=['Total Table Topics'])
+
+
+    st.dataframe(styled_summary_stats_df)
+
+
+
+
 def main(): 
     
 
@@ -345,6 +439,14 @@ def main():
     meeting_ids_csv = ','.join([str(i) for i in meeting_list['meeting_id']])
 
 
+    st.subheader("How many times did you speak?")
+    display_summary_stats(meeting_ids_csv)
+
+
+    st.subheader("Medal Tally")
+    display_awards(meeting_ids_csv)
+
+
     st.subheader("Attendance Matrix")
     st.write("In decreseasing order of total attendance; :green[in green means present]")
     display_meeting_attendance(meeting_ids_csv)
@@ -364,8 +466,6 @@ def main():
     st.write("In descreasing order of evaluations; :violet[in violet means evaluated a speech]")
     display_evaluators(meeting_ids_csv)
 
-    st.subheader("Medal Tally")
-    display_awards(meeting_ids_csv)
 
 
     st.divider()
