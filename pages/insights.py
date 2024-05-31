@@ -442,15 +442,15 @@ def main():
     meeting_ids_csv = ','.join([str(i) for i in meeting_list['meeting_id']])
 
 
-    st.subheader("How many times did you speak?")
+    st.subheader("How many times did you speak? :speaking_head_in_silhouette:")
     display_summary_stats(meeting_ids_csv)
 
 
-    st.subheader("Medal Tally")
+    st.subheader("Medal Tally :medal:")
     display_awards(meeting_ids_csv)
 
 
-    st.subheader("Attendance Matrix")
+    st.subheader("Attendance Matrix :chair:")
     st.write("In decreseasing order of total attendance; :green[in green means present]")
     display_meeting_attendance(meeting_ids_csv)
 
