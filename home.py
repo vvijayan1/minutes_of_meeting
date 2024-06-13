@@ -16,7 +16,7 @@ if 'MEETINGS_IN_DEV' not in os.environ:
 
 st.title("Public Speaking Club Meeting Insights")
 
-st.page_link("pages/insights.py", label="What happed over a period if time", icon="🧐")
+st.page_link("pages/insights.py", label="What happed over a period of time", icon="🧐")
 st.page_link("pages/minutes.py", label="Extract full details of a meeting", icon="📜")
 
 st.divider()
