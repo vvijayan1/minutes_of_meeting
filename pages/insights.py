@@ -420,6 +420,53 @@ ORDER BY
 
 
 
+def draw_attendance_stats(meeting_ids_csv):
+
+    sql_query = f'''
+    SELECT
+    mt.date AS meeting_date,
+    COUNT(DISTINCT a.member_id) AS number_of_members_present,
+    mt.guests_num AS number_of_guests
+FROM
+    meetings mt
+LEFT JOIN
+    attendance a ON mt.meeting_id = a.meeting_id
+where mt.meeting_id in ({meeting_ids_csv})
+GROUP BY
+    mt.meeting_id, mt.date, mt.guests_num
+ORDER BY
+    mt.date;
+'''
+    
+
+    conn = st.connection('minutes', type='sql')
+
+    attendance_stats_df = conn.query(sql_query)
+
+    # change the column names to readable ones
+    attendance_stats_df.columns = ['Date', 'Num of Members ', 'Num of Guests']    
+
+
+
+    # use streamlit's line_chart to plot the attendance stats
+    st.line_chart(attendance_stats_df.set_index('Date'))
+
+def get_random_table_topic(meeting_ids_csv):
+
+    sql_query = f'''
+    SELECT
+    tt.topic
+    FROM
+    table_topics tt
+    WHERE tt.meeting_id in ({meeting_ids_csv})
+    ORDER BY RANDOM()
+    LIMIT 1;
+    '''
+
+    conn = st.connection('minutes', type='sql')
+    random_table_topic = conn.query(sql_query)
+
+    st.write("Table topic of the moment: :orange["+random_table_topic['topic'].values[0]+"]")
 
 def main(): 
     
@@ -433,13 +480,17 @@ def main():
     
     start_date, end_date = accept_user_input()
     
-    st.write('From Date:', start_date)
-    st.write('To Date:', end_date)
 
     meeting_list = get_meeting_list(start_date, end_date)
 
     # convert elements of the df into a csv
     meeting_ids_csv = ','.join([str(i) for i in meeting_list['meeting_id']])
+
+    get_random_table_topic(meeting_ids_csv)
+
+
+    st.subheader("Attendance Stats :chart_with_upwards_trend:")
+    draw_attendance_stats(meeting_ids_csv)
 
 
     st.subheader("How many times did you speak? :speaking_head_in_silhouette:")
