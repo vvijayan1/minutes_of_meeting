@@ -486,7 +486,7 @@ def main():
     # convert elements of the df into a csv
     meeting_ids_csv = ','.join([str(i) for i in meeting_list['meeting_id']])
 
-    get_random_table_topic(meeting_ids_csv)
+#    get_random_table_topic(meeting_ids_csv)
 
 
     st.subheader("Attendance Stats :chart_with_upwards_trend:")
