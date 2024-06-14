@@ -447,9 +447,10 @@ ORDER BY
     attendance_stats_df.columns = ['Date', 'Num of Members ', 'Num of Guests']    
 
 
-
     # use streamlit's line_chart to plot the attendance stats
     st.line_chart(attendance_stats_df.set_index('Date'))
+
+
 
 def get_random_table_topic(meeting_ids_csv):
 
@@ -467,6 +468,36 @@ def get_random_table_topic(meeting_ids_csv):
     random_table_topic = conn.query(sql_query)
 
     st.write("Table topic of the moment: :orange["+random_table_topic['topic'].values[0]+"]")
+
+
+
+def get_summary_insights(meeting_ids_csv):
+
+    sql_query = f'''
+    SELECT
+    (SELECT COUNT(DISTINCT speaker_id) FROM speeches where meeting_id in  ({meeting_ids_csv}) ) AS unique_prepared_speakers,
+    (SELECT COUNT(DISTINCT evaluation_counterpart_id) FROM speeches where meeting_id in  ({meeting_ids_csv})) AS unique_evaluators,
+    (SELECT COUNT(DISTINCT speaker_id) FROM table_topics where meeting_id in  ({meeting_ids_csv})) AS unique_table_topics_speakers;
+    '''
+
+    conn = st.connection('minutes', type='sql')
+
+    summary_insights = conn.query(sql_query)
+    # change the column names to readable ones
+    summary_insights.columns = ['Unique Prepared Speakers', 'Unique Evaluators', 'Unique Table Topics Speakers']
+    # remove the index
+
+
+    st.dataframe(summary_insights)
+
+
+
+
+
+
+
+
+
 
 def main(): 
     
@@ -486,7 +517,8 @@ def main():
     # convert elements of the df into a csv
     meeting_ids_csv = ','.join([str(i) for i in meeting_list['meeting_id']])
 
-#    get_random_table_topic(meeting_ids_csv)
+
+    get_summary_insights(meeting_ids_csv)
 
 
     st.subheader("Attendance Stats :chart_with_upwards_trend:")
