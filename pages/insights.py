@@ -485,7 +485,13 @@ def get_summary_insights(meeting_ids_csv):
     summary_insights = conn.query(sql_query)
     # change the column names to readable ones
     summary_insights.columns = ['Unique Prepared Speakers', 'Unique Evaluators', 'Unique Table Topics Speakers']
-    # remove the index
+
+    # apply color in shares of violet to the dataframe
+    summary_insights = summary_insights.style.applymap(lambda x: 'background-color: #5D3FD3', subset=['Unique Prepared Speakers'])
+    summary_insights = summary_insights.applymap(lambda x: 'background-color: #6851C4', subset=['Unique Evaluators'])
+    summary_insights = summary_insights.applymap(lambda x: 'background-color: #8879C7', subset=['Unique Table Topics Speakers'])
+
+
 
 
     st.dataframe(summary_insights)
