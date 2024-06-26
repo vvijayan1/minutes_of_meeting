@@ -530,13 +530,14 @@ def main():
     st.subheader("Attendance Stats :chart_with_upwards_trend:")
     draw_attendance_stats(meeting_ids_csv)
 
+    st.subheader("Medal Tally :medal:")
+    display_awards(meeting_ids_csv)
 
     st.subheader("How many times did you speak? :speaking_head_in_silhouette:")
     display_summary_stats(meeting_ids_csv)
 
 
-    st.subheader("Medal Tally :medal:")
-    display_awards(meeting_ids_csv)
+
 
 
     st.subheader("Attendance Matrix :chair:")
