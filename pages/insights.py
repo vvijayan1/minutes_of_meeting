@@ -9,10 +9,20 @@ from datetime import date
 
 def accept_user_input():
     # create a streamlit form to accept user input
+
+    today = date.today()
+    current_year = today.year
+    if today.month <= 6:
+            default_date = date(current_year, 1, 1)
+    else:
+            default_date = date(current_year, 7, 1)
+
+    
     with st.form(key='analysis_form'):
         # add a date input for the start date
 
-        min_date_value = date.fromisoformat('2024-01-01')
+
+        min_date_value = date.fromisoformat(default_date.strftime('%Y-%m-%d'))
 
         max_date_value = date.today()
 
@@ -495,11 +505,6 @@ def get_summary_insights(meeting_ids_csv):
 
 
     st.dataframe(summary_insights)
-
-
-
-
-
 
 
 
