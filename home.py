@@ -10,6 +10,7 @@ if 'MEETINGS_IN_DEV' not in os.environ:
         [ Page("home.py", "Home", "🏠"),
             Page("pages/insights.py", "Insights across time", ":bulb:"),
             Page("pages/minutes.py", "Meeting Minutes", ":chart:"),
+            Page("pages/member_report.py", "Member Participation", ":bar_chart:"),
         ]
     )
 
@@ -18,7 +19,7 @@ st.title("Public Speaking Club Meeting Insights")
 
 st.page_link("pages/insights.py", label="What happed over a period of time", icon="🧐")
 st.page_link("pages/minutes.py", label="Extract full details of a meeting", icon="📜")
-
+st.page_link("pages/member_report.py", label="Know participation by member", icon="👤")
 st.divider()
 
 st.write(":orange[For the curious:]")

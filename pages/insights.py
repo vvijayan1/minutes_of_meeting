@@ -22,13 +22,15 @@ def accept_user_input():
         # add a date input for the start date
 
 
-        min_date_value = date.fromisoformat(default_date.strftime('%Y-%m-%d'))
+        default_date_value = date.fromisoformat(default_date.strftime('%Y-%m-%d'))
+
+        min_date_value = date.fromisoformat("2024-01-01") # data is present from this date
 
         max_date_value = date.today()
 
         start_date = st.date_input('From what date do you want to analyze?', 
                                    min_value=min_date_value, max_value=max_date_value,
-                                   value=min_date_value)
+                                   value=default_date_value)
 
         # add a date input for the end date
         end_date = st.date_input('Till what date do you want to analyze?',min_value=min_date_value, max_value=max_date_value)
