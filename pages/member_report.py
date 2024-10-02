@@ -65,10 +65,10 @@ def get_member_participation(member_id, start_date):
                 WHEN rt.timer_id = {member_id} THEN 'Timer'
                 WHEN rt.ah_counter_id = {member_id} THEN 'Ah-Counter'
                 WHEN rt.grammarian_id = {member_id} THEN 'Grammarian'
-                WHEN s.speaker_id = {member_id} THEN 'Speaker'
+                WHEN s.speaker_id = {member_id} THEN '(Prepared) Speaker'
                 WHEN s.evaluation_counterpart_id = {member_id} THEN 'Evaluator'
                 WHEN tt.speaker_id = {member_id} THEN 'Table Topics Speaker'
-                WHEN a.member_id = {member_id} THEN 'Present'
+
                 ELSE 'Absent'
             END),
             'Absent'
@@ -78,7 +78,7 @@ def get_member_participation(member_id, start_date):
     LEFT JOIN role_takers rt ON m.meeting_id = rt.meeting_id
     LEFT JOIN speeches s ON m.meeting_id = s.meeting_id
     LEFT JOIN table_topics tt ON m.meeting_id = tt.meeting_id
-    LEFT JOIN attendance a ON m.meeting_id = a.meeting_id
+
     WHERE 
         m.date >= '{start_date_str}' and (
         rt.president_id = {member_id} or 
@@ -91,8 +91,7 @@ def get_member_participation(member_id, start_date):
         rt.grammarian_id = {member_id} or 
         s.speaker_id = {member_id} or   
         s.evaluation_counterpart_id = {member_id} or 
-        tt.speaker_id = {member_id} or 
-        a.member_id = {member_id})
+        tt.speaker_id = {member_id} )
 
     GROUP BY 
         m.date
