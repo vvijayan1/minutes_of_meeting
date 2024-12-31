@@ -10,10 +10,10 @@ def record_key_role_takers():
 
     members = get_current_members()
 
-    members['member_name'] = members['member_id'].astype(str) + ', ' + members['first_name']
+    members['member_name'] = members['member_id'].astype(str) + ', ' + members['name']
 
     # create a streamlit form to accept user input for the table role_takers which has columns 
-    # meeting_id, president_id, saa_id, tod_id, ttm_id, timer_id, ah_counter_id, grammarian_id, ge_id
+    # meeting_id,  president_member_id, saa_member_id, tod_member_id, ttm_member_id, timer_member_id, ah_counter_member_id, grammarian_member_id, general_evaluator_member_id
 
     with st.form(key='key_role_takers_form'):
 
@@ -24,49 +24,49 @@ def record_key_role_takers():
         president = st.selectbox('President', members['member_name'])
 
         # extract the member_id from the president
-        president_id = president.split(',')[0]
+        president_member_id = president.split(',')[0]
 
         # add a selectbox for the saa
         saa = st.selectbox('SAA', members['member_name'])
 
         # extract the member_id from the saa
-        saa_id = saa.split(',')[0]
+        saa_member_id = saa.split(',')[0]
 
         # add a selectbox for the tod
         tod = st.selectbox('TOD', members['member_name'])
 
         # extract the member_id from the tod
-        tod_id = tod.split(',')[0]
+        tod_member_id = tod.split(',')[0]
 
         # add a selectbox for the ttm
         ttm = st.selectbox('TTM', members['member_name'])
 
         # extract the member_id from the ttm
-        ttm_id = ttm.split(',')[0]
+        ttm_member_id = ttm.split(',')[0]
 
         # add a selectbox for the timer
         timer = st.selectbox('Timer', members['member_name'])
 
         # extract the member_id from the timer
-        timer_id = timer.split(',')[0]
+        timer_member_id = timer.split(',')[0]
 
         # add a selectbox for the ah_counter
         ah_counter = st.selectbox('Ah Counter', members['member_name'])
 
         # extract the member_id from the ah_counter
-        ah_counter_id = ah_counter.split(',')[0]
+        ah_counter_member_id = ah_counter.split(',')[0]
 
         # add a selectbox for the grammarian
         grammarian = st.selectbox('Grammarian', members['member_name'])
 
         # extract the member_id from the grammarian
-        grammarian_id = grammarian.split(',')[0]
+        grammarian_member_id = grammarian.split(',')[0]
 
         # add a selectbox for the ge
         ge = st.selectbox('GE', members['member_name'])
 
         # extract the member_id from the ge
-        ge_id = ge.split(',')[0]
+        general_evaluator_member_id = ge.split(',')[0]
 
         # add a submit button
         submit_button = st.form_submit_button(label='Submit')
@@ -92,39 +92,39 @@ def record_key_role_takers():
         key_role_takers_sql = """
             INSERT INTO role_takers (
                 meeting_id,
-                president_id,
-                saa_id,
-                tod_id,
-                ttm_id,
-                timer_id,
-                ah_counter_id,
-                grammarian_id,
-                ge_id
+                president_member_id,
+                saa_member_id,
+                tod_member_id,
+                ttm_member_id,
+                timer_member_id,
+                ah_counter_member_id,
+                grammarian_member_id,
+                general_evaluator_member_id
             )
             VALUES (
                 :meeting_id,
-                :president_id,
-                :saa_id,
-                :tod_id,
-                :ttm_id,
-                :timer_id,
-                :ah_counter_id,
-                :grammarian_id,
-                :ge_id
+                :president_member_id,
+                :saa_member_id,
+                :tod_member_id,
+                :ttm_member_id,
+                :timer_member_id,
+                :ah_counter_member_id,
+                :grammarian_member_id,
+                :general_evaluator_member_id
             )
         """
 
         # create a dictionary of parameters to pass to the query
         params = {
             'meeting_id': meeting_id,
-            'president_id': president_id,
-            'saa_id': saa_id,
-            'tod_id': tod_id,
-            'ttm_id': ttm_id,
-            'timer_id': timer_id,
-            'ah_counter_id': ah_counter_id,
-            'grammarian_id': grammarian_id,
-            'ge_id': ge_id
+            'president_member_id':  president_member_id,
+            'saa_member_id': saa_member_id,
+            'tod_member_id': tod_member_id,
+            'ttm_member_id': ttm_member_id,
+            'timer_member_id': timer_member_id,
+            'ah_counter_member_id': ah_counter_member_id,
+            'grammarian_member_id': grammarian_member_id,
+            'general_evaluator_member_id': general_evaluator_member_id
         }
 
         # insert the data into the key_role_takers table

@@ -14,12 +14,12 @@ def record_attendance():
     members_sql = """
         SELECT
             member_id,
-            first_name
+            name
         FROM
             members
-        WHERE current_member = 1
+        WHERE is_current_member = 1
         ORDER BY
-            first_name
+            name
     """
 
 
@@ -77,7 +77,7 @@ meeting_id, members = record_attendance()
 # print the number of members present and who was present along with their id and first names
 st.write('Number of Members Present:', members['present'].sum())
 st.write('Members Present:')
-st.write(members[members['present'] == True][['member_id', 'first_name']])
+st.write(members[members['present'] == True][['member_id', 'name']])
 
 # ask for user confirmation to record the attendance
 if st.button('Confirm Attendance'):

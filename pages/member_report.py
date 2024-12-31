@@ -14,12 +14,12 @@ def select_member_and_date():
     # Create a selectbox for member selection
     selected_member = st.selectbox(
         'Select a member:',
-        options=members['first_name'],
-        format_func=lambda x: f"{x} (ID: {members[members['first_name'] == x]['member_id'].values[0]})"
+        options=members['name'],
+        format_func=lambda x: f"{x} (ID: {members[members['name'] == x]['member_id'].values[0]})"
     )
     
     # Get the member_id of the selected member
-    selected_member_id = members[members['first_name'] == selected_member]['member_id'].values[0]
+    selected_member_id = members[members['name'] == selected_member]['member_id'].values[0]
     
     today = date.today()
     current_year = today.year
@@ -54,20 +54,20 @@ def get_member_participation(member_id, start_date):
     # SQL query to get member participation
     sql_query = f"""
     SELECT 
-        m.date,
+        m.meeting_date,
         COALESCE(
             (CASE
-                WHEN rt.president_id = {member_id} THEN 'President'
-                WHEN rt.tod_id = {member_id} THEN 'Toastmaster of the Day'
-                WHEN rt.saa_id = {member_id} THEN 'Sergeant-at-Arms'
-                WHEN rt.ttm_id = {member_id} THEN 'Table Topics Master'
-                WHEN rt.ge_id = {member_id} THEN 'General Evaluator'
-                WHEN rt.timer_id = {member_id} THEN 'Timer'
-                WHEN rt.ah_counter_id = {member_id} THEN 'Ah-Counter'
-                WHEN rt.grammarian_id = {member_id} THEN 'Grammarian'
-                WHEN s.speaker_id = {member_id} THEN '(Prepared) Speaker'
-                WHEN s.evaluation_counterpart_id = {member_id} THEN 'Evaluator'
-                WHEN tt.speaker_id = {member_id} THEN 'Table Topics Speaker'
+                WHEN rt. president_member_id = {member_id} THEN 'President'
+                WHEN rt.tod_member_id = {member_id} THEN 'Toastmaster of the Day'
+                WHEN rt.saa_member_id = {member_id} THEN 'Sergeant-at-Arms'
+                WHEN rt.ttm_member_id = {member_id} THEN 'Table Topics Master'
+                WHEN rt.general_evaluator_member_id = {member_id} THEN 'General Evaluator'
+                WHEN rt.timer_member_id = {member_id} THEN 'Timer'
+                WHEN rt.ah_counter_member_id = {member_id} THEN 'Ah-Counter'
+                WHEN rt.grammarian_member_id = {member_id} THEN 'Grammarian'
+                WHEN s.speaker_member_id = {member_id} THEN '(Prepared) Speaker'
+                WHEN s.evaluator_member_id = {member_id} THEN 'Evaluator'
+                WHEN tt.speaker_member_id = {member_id} THEN 'Table Topics Speaker'
 
                 ELSE 'Absent'
             END),
@@ -76,27 +76,27 @@ def get_member_participation(member_id, start_date):
     FROM 
         meetings m
     LEFT JOIN role_takers rt ON m.meeting_id = rt.meeting_id
-    LEFT JOIN speeches s ON m.meeting_id = s.meeting_id
+    LEFT JOIN prepared_speeches s ON m.meeting_id = s.meeting_id
     LEFT JOIN table_topics tt ON m.meeting_id = tt.meeting_id
 
     WHERE 
-        m.date >= '{start_date_str}' and (
-        rt.president_id = {member_id} or 
-        rt.tod_id = {member_id} or 
-        rt.saa_id = {member_id} or 
-        rt.ttm_id = {member_id} or 
-        rt.ge_id = {member_id} or 
-        rt.timer_id = {member_id} or 
-        rt.ah_counter_id = {member_id} or 
-        rt.grammarian_id = {member_id} or 
-        s.speaker_id = {member_id} or   
-        s.evaluation_counterpart_id = {member_id} or 
-        tt.speaker_id = {member_id} )
+        m.meeting_date >= '{start_date_str}' and (
+        rt. president_member_id = {member_id} or 
+        rt.tod_member_id = {member_id} or 
+        rt.saa_member_id = {member_id} or 
+        rt.ttm_member_id = {member_id} or 
+        rt.general_evaluator_member_id = {member_id} or 
+        rt.timer_member_id = {member_id} or 
+        rt.ah_counter_member_id = {member_id} or 
+        rt.grammarian_member_id = {member_id} or 
+        s.speaker_member_id = {member_id} or   
+        s.evaluator_member_id = {member_id} or 
+        tt.speaker_member_id = {member_id} )
 
     GROUP BY 
-        m.date
+        m.meeting_date
     ORDER BY 
-        m.date DESC    
+        m.meeting_date DESC    
 
     """
     
@@ -105,7 +105,7 @@ def get_member_participation(member_id, start_date):
     df = conn.query(sql_query)
     
     # Pivot the dataframe to have dates as index and participation as column
-    df_pivot = df.pivot(index='date', columns='participation', values='participation')
+    df_pivot = df.pivot(index='meeting_date', columns='participation', values='participation')
     df_pivot = df_pivot.fillna('')
     
     # Combine all columns into one

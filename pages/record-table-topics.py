@@ -4,7 +4,7 @@ import numpy as np
 from datetime import datetime
 
 # similar to record-attendance.py need to record table topics attendance
-# table: table_topics; columns: meeting_id, speaker_id, topic 
+# table: table_topics; columns: meeting_id, speaker_member_id, topic 
 
 def record_table_topics():
 
@@ -30,12 +30,12 @@ def record_table_topics():
 
     # create a streamlit to accept meeting ID and editable dataframe of members
     members_sql = f"""
-select members.member_id, members.first_name
+select members.member_id, members.name
 from 
 attendance left join members 
 on attendance.member_id = members.member_id
-where current_member = 1 and attendance.meeting_id = {meeting_id}
-order by first_name;
+where is_current_member = 1 and attendance.meeting_id = {meeting_id}
+order by name;
 """
 
 
@@ -77,7 +77,7 @@ with st.form(key='confirm_form'):
     submit_button = st.form_submit_button(label='Submit')
 
     # if the user clicks the submit button, then insert the data into the database
-    # table table_topics with columns meeting_id, speaker_id, topic
+    # table table_topics with columns meeting_id, speaker_member_id, topic
     if submit_button:
         # create a connection to the minutes database
         conn = st.connection('minutes', type='sql')
@@ -93,7 +93,7 @@ with st.form(key='confirm_form'):
 
             # create a sql statement to insert the data into the table_topics table
             table_topics_sql = """
-                INSERT INTO table_topics (meeting_id, speaker_id, topic)
+                INSERT INTO table_topics (meeting_id, speaker_member_id, topic)
                 VALUES (:meeting_id, :member_id, :topic)
             """
 

@@ -46,7 +46,7 @@ def accept_user_input():
 
 def get_meeting_list(start_date, end_date):
     
-    meeting_ids_sql = f"select meeting_id from meetings where date between '{start_date}' and '{end_date}'"
+    meeting_ids_sql = f"select meeting_id from meetings where meeting_date between '{start_date}' and '{end_date}'"
     
     conn = st.connection('minutes', type='sql')
 
@@ -92,8 +92,8 @@ def highlight_evaluators(val):
 
 def display_evaluators(meeting_ids_csv):
 
-    meeting_attendance_sql = f"select meeting_id, evaluation_counterpart_id from speeches where meeting_id in ({meeting_ids_csv})"
-    members_sql = f"select member_id, first_name from members"
+    meeting_attendance_sql = f"select meeting_id, evaluator_member_id from prepared_speeches where meeting_id in ({meeting_ids_csv})"
+    members_sql = f"select member_id, name from members"
 
     conn = st.connection('minutes', type='sql')
 
@@ -113,11 +113,11 @@ def display_evaluators(meeting_ids_csv):
 
     for index, row in meeting_attendance.iterrows():
         meeting_id = row['meeting_id']
-        member_id = row['evaluation_counterpart_id']
+        member_id = row['evaluator_member_id']
         attendance_matrix_df.loc[member_id][meeting_id] = 'S'
 
 
-    member_dict = all_members.set_index('member_id')['first_name'].to_dict()
+    member_dict = all_members.set_index('member_id')['name'].to_dict()
 
     for current_index in attendance_matrix_df.index:
         if current_index in member_dict:
@@ -133,10 +133,10 @@ def display_evaluators(meeting_ids_csv):
 
 
     # change column IDs to meeting dates 
-    meeting_sql = f"select meeting_id, date from meetings where meeting_id in ({meeting_ids_csv})"
+    meeting_sql = f"select meeting_id, meeting_date from meetings where meeting_id in ({meeting_ids_csv})"
     meeting_dates = conn.query(meeting_sql)
 
-    meeting_dates_dict = meeting_dates.set_index('meeting_id')['date'].to_dict()
+    meeting_dates_dict = meeting_dates.set_index('meeting_id')['meeting_date'].to_dict()
 
     attendance_matrix_df_sorted = attendance_matrix_df_sorted.rename(columns=meeting_dates_dict)
     styled_attendance_matrix = attendance_matrix_df_sorted.style.map(highlight_evaluators)
@@ -156,8 +156,8 @@ def display_evaluators(meeting_ids_csv):
 
 def display_prepared_speakers(meeting_ids_csv):
 
-    meeting_attendance_sql = f"select meeting_id, speaker_id from speeches where meeting_id in ({meeting_ids_csv})"
-    members_sql = f"select member_id, first_name from members"
+    meeting_attendance_sql = f"select meeting_id, speaker_member_id from prepared_speeches where meeting_id in ({meeting_ids_csv})"
+    members_sql = f"select member_id, name from members"
 
     conn = st.connection('minutes', type='sql')
 
@@ -177,11 +177,11 @@ def display_prepared_speakers(meeting_ids_csv):
 
     for index, row in meeting_attendance.iterrows():
         meeting_id = row['meeting_id']
-        member_id = row['speaker_id']
+        member_id = row['speaker_member_id']
         attendance_matrix_df.loc[member_id][meeting_id] = 'S'
 
 
-    member_dict = all_members.set_index('member_id')['first_name'].to_dict()
+    member_dict = all_members.set_index('member_id')['name'].to_dict()
 
     for current_index in attendance_matrix_df.index:
         if current_index in member_dict:
@@ -197,10 +197,10 @@ def display_prepared_speakers(meeting_ids_csv):
 
 
     # change column IDs to meeting dates 
-    meeting_sql = f"select meeting_id, date from meetings where meeting_id in ({meeting_ids_csv})"
+    meeting_sql = f"select meeting_id, meeting_date from meetings where meeting_id in ({meeting_ids_csv})"
     meeting_dates = conn.query(meeting_sql)
 
-    meeting_dates_dict = meeting_dates.set_index('meeting_id')['date'].to_dict()
+    meeting_dates_dict = meeting_dates.set_index('meeting_id')['meeting_date'].to_dict()
 
     attendance_matrix_df_sorted = attendance_matrix_df_sorted.rename(columns=meeting_dates_dict)
     styled_attendance_matrix = attendance_matrix_df_sorted.style.map(highlight_speakers)
@@ -213,8 +213,8 @@ def display_prepared_speakers(meeting_ids_csv):
 
 def display_table_topics_speakers(meeting_ids_csv):
 
-    meeting_attendance_sql = f"select meeting_id, speaker_id from table_topics where meeting_id in ({meeting_ids_csv})"
-    members_sql = f"select member_id, first_name from members"
+    meeting_attendance_sql = f"select meeting_id, speaker_member_id from table_topics where meeting_id in ({meeting_ids_csv})"
+    members_sql = f"select member_id, name from members"
 
     conn = st.connection('minutes', type='sql')
 
@@ -234,11 +234,11 @@ def display_table_topics_speakers(meeting_ids_csv):
 
     for index, row in meeting_attendance.iterrows():
         meeting_id = row['meeting_id']
-        member_id = row['speaker_id']
+        member_id = row['speaker_member_id']
         attendance_matrix_df.loc[member_id][meeting_id] = 'S'
 
 
-    member_dict = all_members.set_index('member_id')['first_name'].to_dict()
+    member_dict = all_members.set_index('member_id')['name'].to_dict()
 
     for current_index in attendance_matrix_df.index:
         if current_index in member_dict:
@@ -254,10 +254,10 @@ def display_table_topics_speakers(meeting_ids_csv):
 
 
     # change column IDs to meeting dates 
-    meeting_sql = f"select meeting_id, date from meetings where meeting_id in ({meeting_ids_csv})"
+    meeting_sql = f"select meeting_id, meeting_date from meetings where meeting_id in ({meeting_ids_csv})"
     meeting_dates = conn.query(meeting_sql)
 
-    meeting_dates_dict = meeting_dates.set_index('meeting_id')['date'].to_dict()
+    meeting_dates_dict = meeting_dates.set_index('meeting_id')['meeting_date'].to_dict()
 
     attendance_matrix_df_sorted = attendance_matrix_df_sorted.rename(columns=meeting_dates_dict)
     styled_attendance_matrix = attendance_matrix_df_sorted.style.map(highlight_spoke)
@@ -271,7 +271,7 @@ def display_table_topics_speakers(meeting_ids_csv):
 def display_meeting_attendance(meeting_ids_csv):
 
     meeting_attendance_sql = f"select meeting_id, member_id from attendance where meeting_id in ({meeting_ids_csv})"
-    members_sql = f"select member_id, first_name from members"
+    members_sql = f"select member_id, name from members"
 
     conn = st.connection('minutes', type='sql')
 
@@ -295,7 +295,7 @@ def display_meeting_attendance(meeting_ids_csv):
         attendance_matrix_df.loc[member_id][meeting_id] = 'P'
 
 
-    member_dict = all_members.set_index('member_id')['first_name'].to_dict()
+    member_dict = all_members.set_index('member_id')['name'].to_dict()
 
     for current_index in attendance_matrix_df.index:
         if current_index in member_dict:
@@ -307,13 +307,13 @@ def display_meeting_attendance(meeting_ids_csv):
     attendance_matrix_df_sorted = attendance_matrix_df.sort_values(by='Count_P', ascending=False).drop('Count_P', axis=1)
 
     # change column IDs to meeting dates 
-    meeting_sql = f"select meeting_id, date from meetings where meeting_id in ({meeting_ids_csv})"
+    meeting_sql = f"select meeting_id, meeting_date from meetings where meeting_id in ({meeting_ids_csv})"
     meeting_dates = conn.query(meeting_sql)
 
     attendance_matrix_df_sorted['Total Attendance'] = attendance_matrix_df_sorted[unique_meeting_ids].apply(lambda row: row.eq('P').sum(), axis=1)
 
 
-    meeting_dates_dict = meeting_dates.set_index('meeting_id')['date'].to_dict()
+    meeting_dates_dict = meeting_dates.set_index('meeting_id')['meeting_date'].to_dict()
 
     attendance_matrix_df_sorted = attendance_matrix_df_sorted.rename(columns=meeting_dates_dict)
     styled_attendance_matrix = attendance_matrix_df_sorted.style.map(highlight_none)
@@ -328,19 +328,19 @@ def display_meeting_attendance(meeting_ids_csv):
 def display_awards(meeting_ids_csv):
 
     sql_query = f'''SELECT
-    m.first_name  AS member_name,
-    COUNT(CASE WHEN a.best_speaker_id = m.member_id THEN 1 ELSE NULL END) AS best_speaker,
-    COUNT(CASE WHEN a.best_table_topics_speaker_id = m.member_id THEN 1 ELSE NULL END) AS best_table_topics,
-    COUNT(CASE WHEN a.best_evaluator_id = m.member_id THEN 1 ELSE NULL END) AS best_evaluator,
-	COUNT(CASE WHEN a.best_auxiliary_role_taker_id = m.member_id THEN 1 ELSE NULL END) AS best_auxiliary_role,
-	COUNT(CASE WHEN a.best_role_taker_id= m.member_id THEN 1 ELSE NULL END) AS best_role_taker
+    m.name  AS member_name,
+    COUNT(CASE WHEN a.best_speaker_member_id = m.member_id THEN 1 ELSE NULL END) AS best_speaker,
+    COUNT(CASE WHEN a.best_table_topics_speaker_member_id = m.member_id THEN 1 ELSE NULL END) AS best_table_topics,
+    COUNT(CASE WHEN a.best_evaluator_member_id = m.member_id THEN 1 ELSE NULL END) AS best_evaluator,
+	COUNT(CASE WHEN a.best_auxiliary_role_taker_member_id = m.member_id THEN 1 ELSE NULL END) AS best_auxiliary_role,
+	COUNT(CASE WHEN a.best_role_taker_member_id= m.member_id THEN 1 ELSE NULL END) AS best_role_taker
 FROM
     members m
 LEFT JOIN
-    awards a ON m.member_id IN (a.best_speaker_id, a.best_table_topics_speaker_id, a.best_evaluator_id,a.best_auxiliary_role_taker_id ,a.best_role_taker_id)
+    awards a ON m.member_id IN (a.best_speaker_member_id, a.best_table_topics_speaker_member_id, a.best_evaluator_member_id,a.best_auxiliary_role_taker_member_id ,a.best_role_taker_member_id)
 where a.meeting_id  in ({meeting_ids_csv})
 GROUP BY
- m.first_name
+ m.name
 ORDER BY
     member_name;
 '''
@@ -378,7 +378,7 @@ WITH restricted_meetings AS (
 )
 
 SELECT
-    m.first_name AS Member_Name,
+    m.name AS Member_Name,
     COALESCE(attendance_counts.total_attendance, 0) AS total_attendance,
     COALESCE(speeches_counts.total_speeches, 0) AS total_speeches,
     COALESCE(evaluations_counts.total_evaluations, 0) AS total_evaluations,
@@ -391,20 +391,20 @@ LEFT JOIN
      WHERE meeting_id IN (SELECT meeting_id FROM restricted_meetings)
      GROUP BY member_id) AS attendance_counts ON m.member_id = attendance_counts.member_id
 LEFT JOIN
-    (SELECT speaker_id AS member_id, COUNT(*) AS total_speeches
-     FROM speeches
+    (SELECT speaker_member_id AS member_id, COUNT(*) AS total_speeches
+     FROM prepared_speeches
      WHERE meeting_id IN (SELECT meeting_id FROM restricted_meetings)
-     GROUP BY speaker_id) AS speeches_counts ON m.member_id = speeches_counts.member_id
+     GROUP BY speaker_member_id) AS speeches_counts ON m.member_id = speeches_counts.member_id
 LEFT JOIN
-    (SELECT evaluation_counterpart_id AS member_id, COUNT(*) AS total_evaluations
-     FROM speeches
+    (SELECT evaluator_member_id AS member_id, COUNT(*) AS total_evaluations
+     FROM prepared_speeches
      WHERE meeting_id IN (SELECT meeting_id FROM restricted_meetings)
-     GROUP BY evaluation_counterpart_id) AS evaluations_counts ON m.member_id = evaluations_counts.member_id
+     GROUP BY evaluator_member_id) AS evaluations_counts ON m.member_id = evaluations_counts.member_id
 LEFT JOIN
-    (SELECT speaker_id AS member_id, COUNT(*) AS total_table_topics
+    (SELECT speaker_member_id AS member_id, COUNT(*) AS total_table_topics
      FROM table_topics
      WHERE meeting_id IN (SELECT meeting_id FROM restricted_meetings)
-     GROUP BY speaker_id) AS table_topics_counts ON m.member_id = table_topics_counts.member_id
+     GROUP BY speaker_member_id) AS table_topics_counts ON m.member_id = table_topics_counts.member_id
 ORDER BY
     member_name;
 '''
@@ -436,18 +436,18 @@ def draw_attendance_stats(meeting_ids_csv):
 
     sql_query = f'''
     SELECT
-    mt.date AS meeting_date,
+    mt.meeting_date AS meeting_date,
     COUNT(DISTINCT a.member_id) AS number_of_members_present,
-    mt.guests_num AS number_of_guests
+    mt.num_of_guests AS number_of_guests
 FROM
     meetings mt
 LEFT JOIN
     attendance a ON mt.meeting_id = a.meeting_id
 where mt.meeting_id in ({meeting_ids_csv})
 GROUP BY
-    mt.meeting_id, mt.date, mt.guests_num
+    mt.meeting_id, mt.meeting_date, mt.num_of_guests
 ORDER BY
-    mt.date;
+    mt.meeting_date;
 '''
     
 
@@ -487,9 +487,9 @@ def get_summary_insights(meeting_ids_csv):
 
     sql_query = f'''
     SELECT
-    (SELECT COUNT(DISTINCT speaker_id) FROM speeches where meeting_id in  ({meeting_ids_csv}) ) AS unique_prepared_speakers,
-    (SELECT COUNT(DISTINCT evaluation_counterpart_id) FROM speeches where meeting_id in  ({meeting_ids_csv})) AS unique_evaluators,
-    (SELECT COUNT(DISTINCT speaker_id) FROM table_topics where meeting_id in  ({meeting_ids_csv})) AS unique_table_topics_speakers;
+    (SELECT COUNT(DISTINCT speaker_member_id) FROM prepared_speeches where meeting_id in  ({meeting_ids_csv}) ) AS unique_prepared_speakers,
+    (SELECT COUNT(DISTINCT evaluator_member_id) FROM prepared_speeches where meeting_id in  ({meeting_ids_csv})) AS unique_evaluators,
+    (SELECT COUNT(DISTINCT speaker_member_id) FROM table_topics where meeting_id in  ({meeting_ids_csv})) AS unique_table_topics_speakers;
     '''
 
     conn = st.connection('minutes', type='sql')

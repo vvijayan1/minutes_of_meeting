@@ -10,10 +10,10 @@ def record_award_winnerss():
 
     members = get_current_members()
 
-    members['member_name'] = members['member_id'].astype(str) + ', ' + members['first_name']
+    members['member_name'] = members['member_id'].astype(str) + ', ' + members['name']
 
     # create a streamlit form to accept user intput for the awards table which has the columns
-    # meeting_id, best_speaker_id, best_table_topics_speaker_id, best_evaluator_id, 
+    # meeting_id, best_speaker_member_id, best_table_topics_speaker_id, best_evaluator_id, 
     # best_role_taker_id, best_auxillary_role_taker_id
 
     with st.form(key='award_winners_form'):
@@ -72,11 +72,11 @@ def record_award_winnerss():
         awards_sql = """
             INSERT INTO awards (
                 meeting_id,
-                best_speaker_id,
-                best_table_topics_speaker_id,
-                best_evaluator_id,
-                best_role_taker_id,
-                best_auxiliary_role_taker_id
+                best_speaker_member_id,
+                best_table_topics_speaker_member_id,
+                best_evaluator_member_id,
+                best_role_taker_member_id,
+                best_auxiliary_role_taker_member_id
             )
             VALUES (
                 :meeting_id,

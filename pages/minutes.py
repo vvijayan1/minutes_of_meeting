@@ -32,7 +32,7 @@ def print_meeting_details(meeting_date):
     # need a function that connects to mysql database
     conn = st.connection('minutes', type='sql')
 
-    meeting_details = conn.query(f'SELECT meeting_id, theme FROM meetings WHERE date = \'{meeting_date}\'')
+    meeting_details = conn.query(f'SELECT meeting_id, meeting_theme FROM meetings WHERE meeting_date = \'{meeting_date}\'')
 
     if meeting_details.empty:
         st.write(':red[Oh! There was no meeting on this day! What a pity! ] :hushed:')
@@ -99,20 +99,20 @@ def draw_meeting_progress_bar(meeting_date):
 def print_role_takers(meeting_number):
 
 
-    role_taker_sql = f"select t1.first_name as President, t2.first_name as ToD, \
-t3.first_name as SAA, t4.first_name as TTM, \
-t8.first_name as 'GE', \
-t5.first_name as Timer, t6.first_name as AhCounter,\
-t7.first_name as Grammarian \
+    role_taker_sql = f"select t1.name as President, t2.name as ToD, \
+t3.name as SAA, t4.name as TTM, \
+t8.name as 'GE', \
+t5.name as Timer, t6.name as AhCounter,\
+t7.name as Grammarian \
 from role_takers rt \
-left join members t1 on t1.member_id = rt.president_id \
-left join members t2 on t2.member_id = rt.tod_id \
-left join members t3 on t3.member_id = rt.saa_id \
-left JOIN members t4 on t4.member_id = rt.ttm_id \
-left JOIN members t5 on t5.member_id = rt.timer_id \
-left JOIN members t6 on t6.member_id = rt.ah_counter_id \
-left JOIN members t7 on t7.member_id = rt.grammarian_id \
-left JOIN members t8 on t8.member_id = rt.ge_id \
+left join members t1 on t1.member_id = rt. president_member_id \
+left join members t2 on t2.member_id = rt.tod_member_id \
+left join members t3 on t3.member_id = rt.saa_member_id \
+left JOIN members t4 on t4.member_id = rt.ttm_member_id \
+left JOIN members t5 on t5.member_id = rt.timer_member_id \
+left JOIN members t6 on t6.member_id = rt.ah_counter_member_id \
+left JOIN members t7 on t7.member_id = rt.grammarian_member_id \
+left JOIN members t8 on t8.member_id = rt.general_evaluator_member_id \
 where meeting_id = {meeting_number};"
     
     conn = st.connection('minutes', type='sql')
@@ -161,11 +161,11 @@ where meeting_id = {meeting_number};"
 
 def print_speeches(meeting_number):
 
-    speeches_sql = f"select t1.first_name as Speaker, t2.first_name as Evaluator, \
-    title as Title, project as Project  \
-from speeches \
-left JOIN members t1 on t1.member_id = speaker_id \
-left JOIN members t2 on t2.member_id = evaluation_counterpart_id \
+    speeches_sql = f"select t1.name as Speaker, t2.name as Evaluator, \
+    speech_title as Title, project_name as Project  \
+from prepared_speeches \
+left JOIN members t1 on t1.member_id = speaker_member_id \
+left JOIN members t2 on t2.member_id = evaluator_member_id \
 where meeting_id = {meeting_number};"
     
     conn = st.connection('minutes', type='sql')
@@ -185,9 +185,9 @@ where meeting_id = {meeting_number};"
 
 def print_table_topic_speakers(meeting_number):
 
-    table_topics_sql = f"select first_name as Speaker, topic as Topic \
+    table_topics_sql = f"select name as Speaker, topic as Topic \
 from table_topics, members \
-where speaker_id = member_id \
+where speaker_member_id = member_id \
 and meeting_id = {meeting_number};"
     
     conn = st.connection('minutes', type='sql')
@@ -250,7 +250,7 @@ order by meeting_id asc;"
     # find the member id of the member_name
     member_id_sql = f"select member_id \
 from members \
-where first_name = '{member_name}';"
+where name = '{member_name}';"
     
     member_id = conn.query(member_id_sql)
     member_id = member_id.loc[0].iloc[0]
@@ -276,7 +276,7 @@ and meeting_id in ({last_4_meetings});"
 
 def print_attendees(meeting_number):
 
-    attendees_sql = f"select first_name as Member \
+    attendees_sql = f"select name as Member \
     from attendance, members \
     where attendance.member_id = members.member_id \
     and meeting_id = {meeting_number};"
@@ -343,7 +343,7 @@ order by meeting_id asc;"
 
 
     total_speakers_sql = f"select count(*) \
-from speeches \
+from prepared_speeches \
 where meeting_id = {meeting_number};"
 
     total_speakers = conn.query(total_speakers_sql)
@@ -354,7 +354,7 @@ where meeting_id = {meeting_number};"
         total_speakers = 0
 
     total_speakers_prev_sql = f"select count(*) \
-from speeches \
+from prepared_speeches \
 where meeting_id = {prev_meeting_number};"
 
     total_speakers_prev = conn.query(total_speakers_prev_sql)
@@ -399,14 +399,14 @@ order by meeting_id asc;"
     
     last_4_table_topics = conn.query(last_4_table_topics_sql)
     
-    guests_sql = f"select guests_num \
+    guests_sql = f"select num_of_guests \
     from meetings \
     where meeting_id = {meeting_number};"
 
     guests = conn.query(guests_sql)
     guests = guests.loc[0].iloc[0]
 
-    guests_prev_sql = f"select guests_num \
+    guests_prev_sql = f"select num_of_guests \
     from meetings \
     where meeting_id = {prev_meeting_number};"
 
@@ -421,7 +421,7 @@ order by meeting_id asc;"
     diff_guests = (guests - guests_prev)
 
 
-    last_4_guests_sql = f"select guests_num as guests \
+    last_4_guests_sql = f"select num_of_guests as guests \
 from meetings \
 where meeting_id >= {meeting_number} - 3 \
 and meeting_id <= {meeting_number} \
@@ -491,17 +491,17 @@ def print_awardees(meeting_number):
 
     # find the best speaker, evaluator and table topics speaker
     # find the best speaker
-    awardees_sql = f"select t1.first_name as aux_role_taker, \
-t2.first_name as evaluator, \
-t3.first_name as role_taker, \
-t4.first_name as speaker, \
-t5.first_name as tt_speaker \
+    awardees_sql = f"select t1.name as aux_role_taker, \
+t2.name as evaluator, \
+t3.name as role_taker, \
+t4.name as speaker, \
+t5.name as tt_speaker \
 from awards \
-left join members t1 on t1.member_id = awards.best_auxiliary_role_taker_id \
-left join members t2 on t2.member_id = awards.best_evaluator_id \
-left join members t3 on t3.member_id = awards.best_role_taker_id \
-left join members t4 on t4.member_id = awards.best_speaker_id \
-left join members t5 on t5.member_id = awards.best_table_topics_speaker_id \
+left join members t1 on t1.member_id = awards.best_auxiliary_role_taker_member_id \
+left join members t2 on t2.member_id = awards.best_evaluator_member_id \
+left join members t3 on t3.member_id = awards.best_role_taker_member_id \
+left join members t4 on t4.member_id = awards.best_speaker_member_id \
+left join members t5 on t5.member_id = awards.best_table_topics_speaker_member_id \
 where meeting_id = {meeting_number};"
     
     conn = st.connection('minutes', type='sql')

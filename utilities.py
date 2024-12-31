@@ -12,12 +12,12 @@ def get_current_members():
     members_sql = """
         SELECT
             member_id,
-            first_name
+            name
         FROM
             members
-        WHERE current_member = 1
+        WHERE is_current_member = 1
         ORDER BY
-            first_name
+            name
     """
 
     # query the members table and return a dataframe

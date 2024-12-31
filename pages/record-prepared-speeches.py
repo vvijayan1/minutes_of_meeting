@@ -10,7 +10,7 @@ def record_speeches():
 
     last_meeting_ids = get_last_meeting_ids()
 
-    # create a streamlit form to accept speaker, evaluator, title, project
+    # create a streamlit form to accept speaker, evaluator, title, project_name
     # speaker and evaluator are select boxes with values from the get_current_members function
 
 
@@ -20,7 +20,7 @@ def record_speeches():
     # memers is a dataframe with member_id and first_name columns
     # combine the member_id and first_name columns into a single column 
     # separated by a comma and space
-    members['member_name'] = members['member_id'].astype(str) + ', ' + members['first_name']
+    members['member_name'] = members['member_id'].astype(str) + ', ' + members['name']
 
 
     with st.form(key='speeches_form'):
@@ -32,19 +32,19 @@ def record_speeches():
         speaker = st.selectbox('Speaker', members['member_name'])
 
         # extract the member_id from the speaker
-        speaker_id = speaker.split(',')[0]
+        speaker_member_id = speaker.split(',')[0]
 
         # add a selectbox for the evaluator
         evaluator = st.selectbox('Evaluator', members['member_name'])
 
         # extract the member_id from the evaluator
-        evaluation_counterpart_id = evaluator.split(',')[0]
+        evaluator_member_id = evaluator.split(',')[0]
 
         # add a text input for the title
         title = st.text_input('Title')
 
-        # add a text input for the project
-        project = st.text_input('Project')
+        # add a text input for the project_name
+        project_name = st.text_input('Project')
 
         # add a submit button
         submit_button = st.form_submit_button(label='Submit')
@@ -55,7 +55,7 @@ def record_speeches():
     st.write('Speaker: ', speaker)
     st.write('Evaluator: ', evaluator)
     st.write('Title: ', title)
-    st.write('Project: ', project)
+    st.write('Project: ', project_name)
 
     if st.button('Confirm Prepared Speech'):
         # create a connection to the minutes database
@@ -65,19 +65,19 @@ def record_speeches():
 
         # create a sql statement to insert the data into the database
         speeches_sql = """
-            INSERT INTO speeches (
+            INSERT INTO prepared_speeches (
                 meeting_id,
-                speaker_id,
-                evaluation_counterpart_id,
-                title,
-                project
+                speaker_member_id,
+                evaluator_member_id,
+                speech_title,
+                project_name
             )
             VALUES (
                 :meeting_id,
-                :speaker_id,
-                :evaluation_counterpart_id,
+                :speaker_member_id,
+                :evaluator_member_id,
                 :title,
-                :project
+                :project_name
             )
         """
 
@@ -86,10 +86,10 @@ def record_speeches():
         # create a dictionary of parameters to pass to the query
         params = {
             'meeting_id': meeting_id,
-            'speaker_id': speaker_id,
-            'evaluation_counterpart_id': evaluation_counterpart_id,
+            'speaker_member_id': speaker_member_id,
+            'evaluator_member_id': evaluator_member_id,
             'title': title,
-            'project': project
+            'project_name': project_name
         }
 
 
